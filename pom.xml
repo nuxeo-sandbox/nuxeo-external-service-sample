@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.nuxeo</groupId>
+    <artifactId>nuxeo-parent</artifactId>
+    <version>11.2</version>
+  </parent>
+
+  <groupId>com.customer.sample</groupId>
+  <artifactId>nuxeo-external-service-sample-parent</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name> Sample integration using stream parent</name>
+  <description> Sample project to demonstrate how to use Stream to integrate Nuxeo with an external application</description>
+  <packaging>pom</packaging>
+
+  <properties>
+    <!-- Skip Nuxeo enforcer rules by default -->
+    <nuxeo.skip.enforcer>true</nuxeo.skip.enforcer>
+    <nuxeo.target.version>11.*</nuxeo.target.version>
+  </properties>
+
+  <modules>
+    <module>nuxeo-external-service-format</module>
+    <module>nuxeo-external-service-core</module>
+    <module>nuxeo-external-service-cli</module>
+  </modules>
+
+  <scm />
+  <licenses />
+  <mailingLists />
+  <issueManagement />
+  <ciManagement />
+  <developers />
+  <distributionManagement />
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>com.customer.sample</groupId>
+        <artifactId>nuxeo-external-service-format</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.customer.sample</groupId>
+        <artifactId>nuxeo-external-service-core</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.customer.sample</groupId>
+        <artifactId>nuxeo-external-service-cli</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <repositories>
+    <repository>
+      <id>maven-public</id>
+      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>nuxeo-studio</id>
+      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <updatePolicy>always</updatePolicy>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven-public</id>
+      <url>https://packages.nuxeo.com/repository/maven-public/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.spotify</groupId>
+          <artifactId>dockerfile-maven-plugin</artifactId>
+          <version>1.4.13</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+</project>

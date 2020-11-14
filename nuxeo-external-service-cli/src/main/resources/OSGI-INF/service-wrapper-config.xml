@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.external.service.wrapper.config">
+
+  <extension point="config" target="com.nuxeo.external.service.wrapper">
+
+   <externalService id="externalservice" name="externalservice">
+	   <namespace>externalservice</namespace>
+   </externalService>
+
+  </extension>
+  
+
+</component>

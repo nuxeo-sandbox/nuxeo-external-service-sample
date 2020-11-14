@@ -1,0 +1,8 @@
+# build artifacts
+target/
+nashorn_code_cache/
+chromedriver.log
+*.log
+*.pyc
+.classpath
+.project

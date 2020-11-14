@@ -1,0 +1,12 @@
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .
+Manifest-Version: 1.0
+Bundle-Vendor: com.nuxeo
+Bundle-Version: 1.0.0
+Bundle-Name: nuxeo-external-service-core
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: com.nuxeo.external.service.core;singleton=true
+Nuxeo-Component: OSGI-INF/stream-contrib.xml,
+ OSGI-INF/service-wrapper-declaration.xml,
+ OSGI-INF/service-wrapper-config.xml,
+ OSGI-INF/service-wrapper-operations.xml

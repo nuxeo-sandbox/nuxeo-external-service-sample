@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.external.service.stream.contrib">
+  
+  <extension point="logConfig" target="org.nuxeo.runtime.stream.service">
+    <logConfig>
+      <log name="externalservice/request" size="1" />
+      <log name="externalservice/response" size="1" />
+    </logConfig>
+  
+  </extension>
+ 
+ 
+  <extension point="streamProcessor" target="org.nuxeo.runtime.stream.service">
+
+    <streamProcessor name="ExternalServiceMessageProcessor" 
+      class="com.nuxeo.service.sink.ExternalServiceResponseStreamProcessor"
+      defaultConcurrency="1" defaultPartitions="1">
+      <policy name="default" maxRetries="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
+   
+      <!-- <computation name="externalService" concurrency="1" /> -->
+      <option name="serviceName">externalservice</option>
+      <option name="inputStream">externalservice/response</option>
+
+    </streamProcessor>
+ 
+ </extension>
+ 
+ 
+ </component>

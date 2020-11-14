@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<component name="com.nuxeo.external.service.wrapper">
+
+  <implementation class="com.nuxeo.service.ExternalServiceWrapperComponent"/>
+
+  <service>
+    <provide interface="com.nuxeo.service.ExternalServiceWrapper"/>
+  </service>
+
+  <extension-point name="config">
+    <documentation>
+      Allows to contribute configuration to the ExternalServiceWrapper
+    </documentation>
+    <object class="com.nuxeo.service.ExternalServiceConfigDescriptor" />
+  </extension-point>
+  
+
+</component>
