@@ -17,10 +17,13 @@ Simply run the maven build:
 
     mvn clean install
 
-
 Thank to the maven shade plugin the jar found in `target` is an uber-jar containing all the dependencies.
 
 As a result it can be run with:
 
     java -jar nuxeo-external-service-cli/target/nuxeo-external-service-cli-1.0-SNAPSHOT.jar 
+
+Example:
+
+    java -jar target/nuxeo-external-service-cli-1.0-SNAPSHOT.jar -c kafka.properties -n externalservice -p nuxeo- -m {"docId":"whatever"}
 
