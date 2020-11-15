@@ -1,8 +1,0 @@
-Bundle-ActivationPolicy: lazy
-Bundle-ClassPath: .
-Manifest-Version: 1.0
-Bundle-Vendor: com.nuxeo
-Bundle-Version: 1.0.0
-Bundle-Name: nuxeo-external-service-format
-Bundle-ManifestVersion: 2
-Bundle-SymbolicName: com.nuxeo.external.service.format;singleton=true

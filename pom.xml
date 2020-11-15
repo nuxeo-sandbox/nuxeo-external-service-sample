@@ -21,7 +21,6 @@
   </properties>
 
   <modules>
-    <module>nuxeo-external-service-format</module>
     <module>nuxeo-external-service-core</module>
     <module>nuxeo-external-service-cli</module>
   </modules>
@@ -36,11 +35,6 @@
 
   <dependencyManagement>
     <dependencies>
-      <dependency>
-        <groupId>com.customer.sample</groupId>
-        <artifactId>nuxeo-external-service-format</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>com.customer.sample</groupId>
         <artifactId>nuxeo-external-service-core</artifactId>

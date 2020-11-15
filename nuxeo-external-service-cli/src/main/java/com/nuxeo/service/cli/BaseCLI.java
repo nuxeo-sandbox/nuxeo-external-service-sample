@@ -15,15 +15,15 @@ import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
-public class BaseCLI {
+public abstract class BaseCLI {
 
-	public static Properties getProducerProps() {
+	public Properties getProducerProps() {
 		Properties props = new Properties();
 		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
 		return props;
 	}
 
-	public static Properties getConsumerProps() {
+	public Properties getConsumerProps() {
 		Properties props = new Properties();
 		props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, KafkaUtils.getBootstrapServers());
 		props.put(ConsumerConfig.REQUEST_TIMEOUT_MS_CONFIG, 30_000);
@@ -35,11 +35,11 @@ public class BaseCLI {
 		return props;
 	}
 
-	protected static LogManager createManager(String prefix) {
+	protected LogManager createManager(String prefix) {
 		return new KafkaLogManager(prefix, getProducerProps(), getConsumerProps());
 	}
 
-	protected static void initSystemProperties(String config) throws Exception {
+	protected void initSystemProperties(String config) throws Exception {
 
 		FileInputStream propFile = new FileInputStream(config);
 		Properties p = new Properties(System.getProperties());
@@ -48,7 +48,7 @@ public class BaseCLI {
 
 	}
 
-	public static void main(String[] args) {
+	public void run(String[] args) {
 
 		Options options = new Options();
 		options.addOption("p", "prefix", true, "prefix used by Nuxeo in Kafka");
@@ -93,12 +93,7 @@ public class BaseCLI {
 
 	}
 
-	protected static void handleCommand(CommandLine cmd, Options options, LogManager lm, String serviceName) {
-
-	}
-
-	protected static void declareAdditionalOptions(Options options) {
-
-	}
+	protected abstract void handleCommand(CommandLine cmd, Options options, LogManager lm, String serviceName);
+	protected abstract void declareAdditionalOptions(Options options);
 
 }

@@ -35,14 +35,18 @@ import org.nuxeo.lib.stream.log.LogOffset;
 import org.nuxeo.lib.stream.log.Name;
 
 public class SendResponseToNuxeo extends BaseCLI {
+	
+	public static void main(String[] args) {
+		new SendResponseToNuxeo().run(args);
+	}
 
-	protected static void declareAdditionalOptions(Options options) {
+	protected void declareAdditionalOptions(Options options) {
 
 		options.addOption("m", "message", true, "json message (file or inline content)");
 
 	}
 
-	protected static void handleCommand(CommandLine cmd, Options options, LogManager lm, String serviceName) {
+	protected void handleCommand(CommandLine cmd, Options options, LogManager lm, String serviceName) {
 
 		String json = cmd.getOptionValue("m");
 		if (json == null) {

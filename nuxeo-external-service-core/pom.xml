@@ -12,10 +12,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.customer.sample</groupId>
-      <artifactId>nuxeo-external-service-format</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.nuxeo.runtime</groupId>
       <artifactId>nuxeo-runtime-stream</artifactId>
     </dependency>
