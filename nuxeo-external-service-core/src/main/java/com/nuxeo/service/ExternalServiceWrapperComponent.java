@@ -1,3 +1,21 @@
+/*
+ * (C) Copyright 2020 Nuxeo (http://nuxeo.com/) and others.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Contributors:
+ *     Tiry
+ */
 package com.nuxeo.service;
 
 import java.util.HashMap;
@@ -20,11 +38,20 @@ import org.nuxeo.runtime.stream.StreamService;
 
 import com.nuxeo.service.messages.ExternalServiceMessage;
 
+/**
+ * Nuxeo Runtime component responsible for providing the {@link ExternalServiceWrapper} service 
+ * and handling the configuration via the "config" extension point
+ * 
+ * @author tiry
+ *
+ */
 public class ExternalServiceWrapperComponent extends DefaultComponent implements ExternalServiceWrapper {
 
 	private static final Logger log = LogManager.getLogger(ExternalServiceWrapperComponent.class);
 
 	protected AvroCodecFactory avroFactory;
+
+	public static final String XP_CONFIG = "config";
 
 	protected Codec<ExternalServiceMessage> messageCodec;
 
@@ -109,8 +136,6 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 	}
 
 	// -----------------------------
-
-	public static final String XP_CONFIG = "config";
 
 	public List<ExternalServiceConfigDescriptor> getConfigs() {
 		return this.getDescriptors(XP_CONFIG);
