@@ -25,6 +25,9 @@ import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.nuxeo.ecm.core.api.CoreInstance;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -35,6 +38,7 @@ import org.nuxeo.runtime.model.ComponentContext;
 import org.nuxeo.runtime.model.DefaultComponent;
 import org.nuxeo.runtime.model.Extension;
 import org.nuxeo.runtime.stream.StreamService;
+import org.nuxeo.runtime.transaction.TransactionHelper;
 
 import com.nuxeo.service.messages.ExternalServiceMessage;
 
@@ -182,6 +186,22 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 		lastReceivedResponse=message;
 		
 		// do something
+		if ("updateDoc".equalsIgnoreCase(message.command)) {
+			
+			String docId = message.getParameters().get("docId");
+			String repository = message.getParameters().get("repository");
+			
+			// run the update as super user
+			TransactionHelper.runInTransaction(() ->CoreInstance.doPrivileged(repository, session -> {
+				DocumentModel doc = session.getDocument(new IdRef(docId));
+				for (String field : message.getParameters().keySet()) {
+					if (field.startsWith("dc:")) {
+						doc.setPropertyValue(field, message.getParameters().get(field));
+					}
+				}
+				session.saveDocument(doc);
+			}));
+		}
 	}
 	
 
