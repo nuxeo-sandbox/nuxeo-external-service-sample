@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-parent</artifactId>
-    <version>11.2</version>
+    <version>2021.0</version>
   </parent>
 
   <groupId>com.customer.sample</groupId>
@@ -48,7 +48,7 @@
     </dependencies>
   </dependencyManagement>
 
-  <repositories>
+ <repositories>
     <repository>
       <id>maven-public</id>
       <url>https://packages.nuxeo.com/repository/maven-public/</url>
@@ -61,8 +61,8 @@
       </snapshots>
     </repository>
     <repository>
-      <id>nuxeo-studio</id>
-      <url>https://connect.nuxeo.com/nuxeo/site/studio/maven</url>
+      <id>maven-internal</id>
+      <url>https://packages.nuxeo.com/repository/maven-internal/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
@@ -72,6 +72,7 @@
       </snapshots>
     </repository>
   </repositories>
+
 
   <pluginRepositories>
     <pluginRepository>

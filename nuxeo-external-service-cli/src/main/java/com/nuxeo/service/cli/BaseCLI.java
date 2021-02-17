@@ -1,6 +1,7 @@
 package com.nuxeo.service.cli;
 
 import java.io.FileInputStream;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.commons.cli.CommandLine;
@@ -12,6 +13,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.nuxeo.lib.stream.log.LogManager;
+import org.nuxeo.lib.stream.log.chronicle.ChronicleLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaLogManager;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
 
@@ -35,8 +37,12 @@ public abstract class BaseCLI {
 		return props;
 	}
 
-	protected LogManager createManager(String prefix) {
-		return new KafkaLogManager(prefix, getProducerProps(), getConsumerProps());
+	protected LogManager createManager(String prefix, String cqPath) {
+		if (cqPath!=null) {
+			return new ChronicleLogManager(Path.of(cqPath));
+		} else {
+			return new KafkaLogManager(prefix, getProducerProps(), getConsumerProps());			
+		}
 	}
 
 	protected void initSystemProperties(String config) throws Exception {
@@ -53,7 +59,8 @@ public abstract class BaseCLI {
 		Options options = new Options();
 		options.addOption("p", "prefix", true, "prefix used by Nuxeo in Kafka");
 		options.addOption("c", "config", true, "Kafka properties file");
-		options.addOption("n", "serverName", true, "service name");
+		options.addOption("n", "serviceName", true, "service name");
+		options.addOption( "cqPath", true, "CQ path - used for unit tests");
 
 		declareAdditionalOptions(options);
 
@@ -79,15 +86,19 @@ public abstract class BaseCLI {
 		String prefix = cmd.getOptionValue("p", "nuxeo");
 		String config = cmd.getOptionValue("c", "kafka.properties");
 		String serviceName = cmd.getOptionValue("n", "externalservice");
-
+		String cqPath = cmd.getOptionValue("cqPath");
+		
 		try {
 			initSystemProperties(config);
 		} catch (Exception e) {
-			System.err.println("Unable to load system properties from " + config + ":" + e.getMessage());
-			return;
+			if (cqPath==null) {
+				System.err.println("Unable to load system properties from " + config + ":" + e.getMessage());
+				return;
+			}
 		}
 
-		LogManager lm = createManager(prefix);
+		
+		LogManager lm = createManager(prefix, cmd.getOptionValue("cqPath", null));
 
 		handleCommand(cmd, options, lm, serviceName);
 
