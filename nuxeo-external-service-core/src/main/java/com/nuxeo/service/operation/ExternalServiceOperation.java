@@ -32,7 +32,8 @@ import com.nuxeo.service.ExternalServiceWrapper;
 import com.nuxeo.service.messages.ExternalServiceMessage;
 
 /**
- * Automation Operation exposing the {@link ExternalServiceWrapper} service via http
+ * Automation Operation exposing the {@link ExternalServiceWrapper} service via
+ * http
  * 
  * @author tiry
  *
@@ -62,7 +63,7 @@ public class ExternalServiceOperation {
 	@OperationMethod
 	public String run() {
 		ExternalServiceMessage message = new ExternalServiceMessage();
-		message.command=command;
+		message.command = command;
 		message.getParameters().putAll(parameters);
 		return service.postMessage(serviceName, message);
 	}

@@ -19,18 +19,15 @@
 package com.nuxeo.service.sink;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.AbstractComputation;
 import org.nuxeo.lib.stream.computation.ComputationContext;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.computation.Topology;
 import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.AvroCodecFactory;
 import org.nuxeo.runtime.stream.StreamProcessorTopology;
 
 import com.nuxeo.service.ExternalServiceWrapper;
@@ -38,8 +35,9 @@ import com.nuxeo.service.messages.ExternalServiceMessage;
 
 /**
  * 
- * Computation used to consume the messages sent by the external service.
- * The actual processing of the message is delegated to {@link ExternalServiceWrapper}.
+ * Computation used to consume the messages sent by the external service. The
+ * actual processing of the message is delegated to
+ * {@link ExternalServiceWrapper}.
  * 
  * @author tiry
  *
@@ -64,28 +62,16 @@ public class ExternalServiceResponseStreamProcessor implements StreamProcessorTo
 
 		protected String serviceName;
 
-		protected Codec<ExternalServiceMessage> codec;
-
 		public ExternalServiceResponseComputation(String name, String serviceName) {
 			super(name, 1, 1);
 			this.serviceName = serviceName;
-			AvroCodecFactory avroFactory = new AvroCodecFactory();
-			Map<String, String> options = new HashMap<>();
-			options.put(AvroCodecFactory.KEY_ENCODING, "json");
-			avroFactory.init(options);
-
-			codec = avroFactory.newCodec(ExternalServiceMessage.class);
-
 		}
 
 		@Override
 		public void processRecord(ComputationContext context, String inputStreamName, Record record) {
-
 			log.debug(metadata.name() + " got record: " + record);
-
-			System.out.println(metadata.name() + " got record: " + record);
-
-			ExternalServiceMessage message = codec.decode(record.getData());
+			// System.out.println(metadata.name() + " got record: " + record);
+			ExternalServiceMessage message = ExternalServiceMessage.parse(record.getData());
 			Framework.getService(ExternalServiceWrapper.class).handleResponseMessage(serviceName, message);
 		}
 	}

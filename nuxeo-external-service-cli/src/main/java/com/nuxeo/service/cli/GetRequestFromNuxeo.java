@@ -27,6 +27,7 @@ import java.time.Duration;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogManager;
 import org.nuxeo.lib.stream.log.LogRecord;
@@ -51,7 +52,7 @@ public class GetRequestFromNuxeo extends BaseCLI {
 		String out = cmd.getOptionValue("o");
 		long t = Long.parseLong(cmd.getOptionValue("t", "1"));
 
-		LogTailer<Record> tailer = lm.createTailer(Name.of(serviceName, "CLI"), Name.of(serviceName, "request"));
+		LogTailer<Record> tailer = lm.createTailer(Name.of(serviceName, "CLI"), Name.of(serviceName, "request"), new AvroMessageCodec(Record.class));
 
 		LogRecord<Record> logEntry;
 		try {
@@ -60,6 +61,8 @@ public class GetRequestFromNuxeo extends BaseCLI {
 			System.err.println("Unable read from stream :" + e.getMessage());
 			e.printStackTrace();
 			return;
+		} finally {
+			tailer.close();
 		}
 
 		if (logEntry == null) {

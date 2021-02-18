@@ -4,10 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.io.Serializable;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,16 +14,7 @@ import org.nuxeo.ecm.core.api.IdRef;
 import org.nuxeo.ecm.core.api.impl.blob.StringBlob;
 import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.test.CoreFeature;
-import org.nuxeo.lib.stream.codec.Codec;
-import org.nuxeo.lib.stream.computation.Record;
-import org.nuxeo.lib.stream.log.LogAppender;
-import org.nuxeo.lib.stream.log.LogRecord;
-import org.nuxeo.lib.stream.log.LogTailer;
-import org.nuxeo.lib.stream.log.Name;
-import org.nuxeo.runtime.api.Framework;
-import org.nuxeo.runtime.codec.AvroCodecFactory;
 import org.nuxeo.runtime.stream.RuntimeStreamFeature;
-import org.nuxeo.runtime.stream.StreamService;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -42,7 +29,7 @@ import com.nuxeo.service.messages.ExternalServiceMessage;
 @Features({ RuntimeStreamFeature.class, CoreFeature.class })
 @Deploy("com.nuxeo.external.service.core")
 @Deploy("com.nuxeo.external.service.core.test:async-listener-contrib.xml")
-public class TestWithListener {
+public class TestWithListener extends BaseExternalServiceSimulator {
 
 	@Inject
 	protected ExternalServiceWrapper wrapper;
@@ -65,12 +52,10 @@ public class TestWithListener {
 		blob.setFilename("sample.txt");
 		blob.setMimeType("text/plain");
 		doc.setPropertyValue("file:content", (Serializable) blob);
-
 		doc = session.createDocument(doc);
 
 		// force commit so that async listeners are triggered
 		TransactionHelper.commitOrRollbackTransaction();
-
 		eventService.waitForAsyncCompletion();
 
 		// be nice and start a new tx
@@ -98,46 +83,29 @@ public class TestWithListener {
 
 	}
 
-	protected void fakeExternalServiceProcessing() throws Exception {
+	protected ExternalServiceMessage computeReply(ExternalServiceMessage request) {
 
-		AvroCodecFactory avroFactory = new AvroCodecFactory();
-		Map<String, String> options = new HashMap<>();
-		options.put(AvroCodecFactory.KEY_ENCODING, "json");
-		avroFactory.init(options);
-		Codec<ExternalServiceMessage> messageCodec = avroFactory.newCodec(ExternalServiceMessage.class);
-
-		StreamService service = Framework.getService(StreamService.class);
-		org.nuxeo.lib.stream.log.LogManager manager = service.getLogManager();
-		LogTailer<Record> tailer = manager.createTailer(Name.of(ExternalServiceWrapperComponent.NS, "test"),
-				Name.of(ExternalServiceWrapperComponent.NS, ExternalServiceWrapperComponent.RQ));
-
-		LogRecord<Record> logEntry = tailer.read(Duration.ofSeconds(5));
-
-		assertNotNull(logEntry);
-
-		Record record = logEntry.message();
-
-		ExternalServiceMessage message = messageCodec.decode(record.getData());
-
+		
+		// check that we have info about the source blob
+		String blobKey = request.getParameters().get("blob_key");
+		assertNotNull(blobKey);
+		
 		ExternalServiceMessage response = new ExternalServiceMessage();
 
 		response.command = "updateDoc";
-		response.addParamater("docId", message.getParameters().get("docId"));
-		response.addParamater("repository", message.getParameters().get("repository"));
+		response.addParameter("docId", request.getParameters().get("docId"));
+		response.addParameter("repository", request.getParameters().get("repository"));
+		response.addParameter("dc:description", "newDescription");
+		response.addParameter("dc:format", "Meeting Note");
+		response.addParameter("dc:source", "Scan");
+		
+		response.addParameter("ocr_fulltext", "foobar");
+		
+		response.setSuccess(true);
 
-		response.addParamater("success", "true");
-		response.addParamater("dc:description", "newDescription");
-		response.addParamater("dc:format", "Meeting Note");
-		response.addParamater("dc:source", "Scan");
-
-		String key = response.command + ":" + UUID.randomUUID().toString();
-
-		Record responseRecord = Record.of(key, messageCodec.encode(response));
-
-		LogAppender<Record> appender = manager.getAppender(Name.of("externalservice", "response"));
-
-		appender.append(key, responseRecord);
-
+		response.sessionId=request.sessionId;
+		
+		return response;
 	}
 
 }

@@ -28,6 +28,7 @@ import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.io.FileUtils;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
 import org.nuxeo.lib.stream.log.LogManager;
@@ -65,7 +66,8 @@ public class SendResponseToNuxeo extends BaseCLI {
 			}
 		}
 
-		LogAppender<Externalizable> appender = lm.getAppender(Name.of(serviceName, "response"));
+		
+		LogAppender<Externalizable> appender = lm.getAppender(Name.of(serviceName, "response"), new AvroMessageCodec(Record.class));
 
 		String key = UUID.randomUUID().toString();
 

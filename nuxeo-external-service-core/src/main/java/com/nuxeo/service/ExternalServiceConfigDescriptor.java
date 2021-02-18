@@ -24,7 +24,8 @@ import org.nuxeo.common.xmap.annotation.XObject;
 import org.nuxeo.runtime.model.Descriptor;
 
 /**
- * {@link XMap} object used to represent the configuration contribution to the {@link ExternalServiceWrapper} service
+ * {@link XMap} object used to represent the configuration contribution to the
+ * {@link ExternalServiceWrapper} service
  * 
  * @author tiry
  *
@@ -67,8 +68,5 @@ public class ExternalServiceConfigDescriptor implements Descriptor {
 	public String getNamespace() {
 		return namespace;
 	}
-
-	
-	
 
 }

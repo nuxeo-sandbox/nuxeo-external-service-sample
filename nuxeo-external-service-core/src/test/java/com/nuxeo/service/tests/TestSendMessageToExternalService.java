@@ -46,7 +46,7 @@ public class TestSendMessageToExternalService {
 
 		ExternalServiceMessage msg = new ExternalServiceMessage();
 		msg.command = "newDocument";
-		msg.addParamater("docId", UUID.randomUUID().toString());
+		msg.addParameter("docId", UUID.randomUUID().toString());
 
 		String key = extService.postMessage("externalService", msg);
 
@@ -68,8 +68,5 @@ public class TestSendMessageToExternalService {
 		
 		tailer.close();
 	}
-	
-
-	
 	
 }

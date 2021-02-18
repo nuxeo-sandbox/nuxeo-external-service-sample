@@ -18,8 +18,17 @@
  */
 package com.nuxeo.service.messages;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * POJO to store the messages exchanged between Nuxeo and the external service
@@ -29,16 +38,70 @@ import java.util.Map;
  */
 public class ExternalServiceMessage {
 
+	protected static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
+	private static final Log log = LogFactory.getLog(ExternalServiceMessage.class);
+
 	public String command;
+
+	protected boolean success;
+
+	public String sessionId;
 
 	protected Map<String, String> parameters = new HashMap<>();
 
-	public void addParamater(String name, String value) {
+	public ExternalServiceMessage() {
+		sessionId = UUID.randomUUID().toString();
+	};
+
+	public ExternalServiceMessage(String command) {
+		super();
+		this.command = command;
+	};
+
+	public void addParameter(String name, String value) {
 		parameters.put(name, value);
 	}
 
 	public Map<String, String> getParameters() {
 		return parameters;
+	}
+
+	public String toJson() {
+		try {
+			return OBJECT_MAPPER.writer().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			log.error("Unable to write JSON format for message", e);
+		}
+		return null;
+	}
+
+	public static ExternalServiceMessage parse(String json) {
+		try {
+			return OBJECT_MAPPER.readValue(json, new TypeReference<ExternalServiceMessage>() {
+			});
+		} catch (Exception e) {
+			log.error("Unable to parse JSON for message", e);
+			log.debug(json);
+		}
+		return null;
+	}
+
+	public static ExternalServiceMessage parse(byte[] data) {
+		try {
+			return parse(new String(data, "UTF-8"));
+		} catch (UnsupportedEncodingException e) {
+			log.error("Unable to parse JSON for message", e);
+		}
+		return null;
+	}
+
+	public boolean isSuccess() {
+		return success;
+	}
+
+	public void setSuccess(boolean success) {
+		this.success = success;
 	}
 
 }

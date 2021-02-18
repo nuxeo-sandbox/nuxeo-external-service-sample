@@ -14,7 +14,7 @@
 
     <streamProcessor name="ExternalServiceMessageProcessor" 
       class="com.nuxeo.service.sink.ExternalServiceResponseStreamProcessor"
-      defaultConcurrency="1" defaultPartitions="1">
+      defaultConcurrency="1" defaultPartitions="1" defaultCodec="avro">
       <policy name="default" maxRetries="2" delay="200ms" maxDelay="2s" continueOnFailure="false" />
    
       <!-- <computation name="externalService" concurrency="1" /> -->

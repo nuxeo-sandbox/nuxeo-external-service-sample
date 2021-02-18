@@ -28,6 +28,7 @@ import org.apache.logging.log4j.Logger;
 import org.nuxeo.ecm.core.api.CoreInstance;
 import org.nuxeo.ecm.core.api.DocumentModel;
 import org.nuxeo.ecm.core.api.IdRef;
+import org.nuxeo.lib.stream.codec.AvroMessageCodec;
 import org.nuxeo.lib.stream.codec.Codec;
 import org.nuxeo.lib.stream.computation.Record;
 import org.nuxeo.lib.stream.log.LogAppender;
@@ -43,8 +44,9 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 import com.nuxeo.service.messages.ExternalServiceMessage;
 
 /**
- * Nuxeo Runtime component responsible for providing the {@link ExternalServiceWrapper} service 
- * and handling the configuration via the "config" extension point
+ * Nuxeo Runtime component responsible for providing the
+ * {@link ExternalServiceWrapper} service and handling the configuration via the
+ * "config" extension point
  * 
  * @author tiry
  *
@@ -56,9 +58,6 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 	protected AvroCodecFactory avroFactory;
 
 	public static final String XP_CONFIG = "config";
-
-	protected Codec<ExternalServiceMessage> messageCodec;
-
 	public static final String NS = "externalservice";
 	public static final String RQ = "request";
 	public static final String RS = "response";
@@ -116,15 +115,7 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 	 */
 	@Override
 	public void start(ComponentContext context) {
-
 		super.start(context);
-
-		avroFactory = new AvroCodecFactory();
-		Map<String, String> options = new HashMap<>();
-		options.put(AvroCodecFactory.KEY_ENCODING, "json");
-		avroFactory.init(options);
-
-		messageCodec = avroFactory.newCodec(ExternalServiceMessage.class);
 	}
 
 	/**
@@ -146,53 +137,49 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 	}
 
 	public ExternalServiceConfigDescriptor getConfig(String serviceName) {
-
 		for (ExternalServiceConfigDescriptor config : getConfigs()) {
 			if (serviceName.equalsIgnoreCase(config.getName())) {
 				return config;
 			}
 		}
 		return null;
-
 	}
-	
+
 	@Override
 	public String postMessage(String serviceName, ExternalServiceMessage message) {
 
 		String key = message.command + ":" + UUID.randomUUID().toString();
-		Record record = Record.of(key, messageCodec.encode(message));
+		Record record = Record.of(key, message.toJson().getBytes());
 
 		StreamService service = Framework.getService(StreamService.class);
-
 		org.nuxeo.lib.stream.log.LogManager manager = service.getLogManager();
-
-		LogAppender<Record> appender = manager.getAppender(Name.of(getConfig(serviceName).getNamespace(), RQ));
-
+		LogAppender<Record> appender = manager.getAppender(Name.of(getConfig(serviceName).getNamespace(), RQ),
+				new AvroMessageCodec<Record>(Record.class));
 		appender.append(key, record);
 
 		return key;
 	}
-	
+
 	protected ExternalServiceMessage lastReceivedResponse;
-	
+
 	public ExternalServiceMessage getLastReceivedResponse() {
 		return lastReceivedResponse;
 	}
-	
+
 	@Override
-	public void handleResponseMessage(String serviceName, ExternalServiceMessage message) {	
-		
+	public void handleResponseMessage(String serviceName, ExternalServiceMessage message) {
+
 		// mainly for unit testing purpose
-		lastReceivedResponse=message;
-		
+		lastReceivedResponse = message;
+
 		// do something
 		if ("updateDoc".equalsIgnoreCase(message.command)) {
-			
+
 			String docId = message.getParameters().get("docId");
 			String repository = message.getParameters().get("repository");
-			
+
 			// run the update as super user
-			TransactionHelper.runInTransaction(() ->CoreInstance.doPrivileged(repository, session -> {
+			TransactionHelper.runInTransaction(() -> CoreInstance.doPrivileged(repository, session -> {
 				DocumentModel doc = session.getDocument(new IdRef(docId));
 				for (String field : message.getParameters().keySet()) {
 					if (field.startsWith("dc:")) {
@@ -203,6 +190,5 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 			}));
 		}
 	}
-	
 
 }

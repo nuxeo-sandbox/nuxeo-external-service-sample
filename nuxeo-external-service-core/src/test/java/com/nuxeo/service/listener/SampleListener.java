@@ -46,11 +46,9 @@ public class SampleListener implements PostCommitFilteringEventListener {
 
 		DocumentEventContext docCtx = (DocumentEventContext) ctx;
 		DocumentModel doc = docCtx.getSourceDocument();
-
 		
 		ExternalServiceMessage msg = new ExternalServiceMessage();
-		msg.command=event.getName();
-		
+		msg.command=event.getName();		
 		msg.getParameters().put("repository", doc.getRepositoryName());
 		msg.getParameters().put("docId", doc.getId());
 		msg.getParameters().put("docType", doc.getType());
@@ -77,13 +75,10 @@ public class SampleListener implements PostCommitFilteringEventListener {
 , "UTF-8"));
 			} catch (IOException e) {
 				e.printStackTrace();
-			}			
-
-			
+			}						
 		}
 		
 		ExternalServiceWrapper wrapper = Framework.getService(ExternalServiceWrapper.class);
-		
 		wrapper.postMessage("externalservice", msg);		
 		
 	}
