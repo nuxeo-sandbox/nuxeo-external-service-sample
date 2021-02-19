@@ -150,16 +150,17 @@ public class ExternalServiceWrapperComponent extends DefaultComponent implements
 
 		String key = message.command + ":" + UUID.randomUUID().toString();
 		Record record = Record.of(key, message.toJson().getBytes());
-
 		StreamService service = Framework.getService(StreamService.class);
-		org.nuxeo.lib.stream.log.LogManager manager = service.getLogManager();
-		LogAppender<Record> appender = manager.getAppender(Name.of(getConfig(serviceName).getNamespace(), RQ),
-				new AvroMessageCodec<Record>(Record.class));
+		org.nuxeo.lib.stream.log.LogManager manager = service.getLogManager();		
+		Name logName = Name.of(getConfig(serviceName).getNamespace(), RQ);
+		manager.createIfNotExists(logName, 1);
+		LogAppender<Record> appender = manager.getAppender(logName,
+				new AvroMessageCodec<Record>(Record.class));		
 		appender.append(key, record);
-
 		return key;
 	}
 
+	// just for tests
 	protected ExternalServiceMessage lastReceivedResponse;
 
 	public ExternalServiceMessage getLastReceivedResponse() {

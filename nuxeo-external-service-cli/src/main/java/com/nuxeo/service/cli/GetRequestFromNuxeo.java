@@ -62,6 +62,7 @@ public class GetRequestFromNuxeo extends BaseCLI {
 			e.printStackTrace();
 			return;
 		} finally {
+			tailer.commit();
 			tailer.close();
 		}
 
@@ -90,6 +91,9 @@ public class GetRequestFromNuxeo extends BaseCLI {
 					return;
 				}
 			}
+			
+			
+			
 		}
 
 	}

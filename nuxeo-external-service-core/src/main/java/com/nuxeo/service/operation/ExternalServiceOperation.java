@@ -64,7 +64,9 @@ public class ExternalServiceOperation {
 	public String run() {
 		ExternalServiceMessage message = new ExternalServiceMessage();
 		message.command = command;
-		message.getParameters().putAll(parameters);
+		if (parameters!=null) {
+			message.getParameters().putAll(parameters);
+		}
 		return service.postMessage(serviceName, message);
 	}
 
